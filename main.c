@@ -49,11 +49,13 @@ static int set_pids(const char* opt){
 static struct record_param* global_param = NULL;
 
 static void global_init(){
-  // TODO
+  global_param = (struct record_param*)malloc(sizeof(struct record_param));
+  global_param->total_time = -1;
+  // TODO register signal
 }
 
 static void global_deinit(){
-  // TODO
+  free(global_param);
 }
 
 int main(int argc, char* argv[]){
@@ -62,7 +64,6 @@ int main(int argc, char* argv[]){
 
   char pids_filled = 0;
   char interval_filled = 0;
-  char time_filled = 0;
   char output_filled = 0;
     
   global_init();
@@ -73,7 +74,6 @@ int main(int argc, char* argv[]){
       if (!set_time(optarg))
 	goto error;
 
-      time_filled++;
       break;
 
     case 'i':
@@ -125,7 +125,7 @@ int main(int argc, char* argv[]){
       goto out;
     }
   
-  if (!(pids_filled & time_filled & interval_filled & output_filled)){
+  if (!(pids_filled & interval_filled & output_filled)){
     printf("Some required fields are not set!\n");
     usage();
     goto error;
