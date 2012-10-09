@@ -8,7 +8,17 @@ static char* version = "CPU Memory Recorder 0.1";
 static char* license = "GPL2";
 
 static void usage(){
-  // TODO
+  printf("%s\n%s\n"
+	 "usage:\n"
+	 " cmrecord -t<time> -i<interval> -c<command>|-p<pids> -o<output>\n"
+	 "  -t = total recording time(s)\n"
+	 "  -i = recording interval(s)\n"
+	 "  -o = output file\n"
+	 "  -p = pids seperated by .\n"
+	 "  -c = tracing command\n",
+	 version,
+	 license
+	 );
 }
 
 static int set_interval(const char* opt){
@@ -57,7 +67,7 @@ int main(int argc, char* argv[]){
     
   global_init();
   
-  while ((c = getopt(argc, argv, "t:i:p:o:")) != -1)
+  while ((c = getopt(argc, argv, "t:i:c:p:o:")) != -1)
     switch (c){
     case 't':
       if (!set_time(optarg))
@@ -106,6 +116,7 @@ int main(int argc, char* argv[]){
 	printf("Option -%c requires an argument.\n", optopt);
       else
 	printf("Unknown option -%c.\n", optopt);
+      usage();
       goto error;
       break;
     default:
@@ -116,6 +127,7 @@ int main(int argc, char* argv[]){
   
   if (!(pids_filled & time_filled & interval_filled & output_filled)){
     printf("Some required fields are not set!\n");
+    usage();
     goto error;
   }
 
