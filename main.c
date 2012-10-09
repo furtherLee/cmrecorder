@@ -14,8 +14,8 @@ static struct record_param* global_param = NULL;
 static void usage(){
   printf("%s\n%s\n"
 	 "usage:\n"
-	 " cmrecord -t<time> -i<interval> -c<command>|-p<pids> -o<output>\n"
-	 "  -t = total recording time(s)\n"
+	 " cmrecord [-t<time>] -i<interval> -c<command>|-p<pids> -o<output>\n"
+	 "  -t = total recording time(s), default is -1 for forever recording\n"
 	 "  -i = recording interval(s)\n"
 	 "  -o = output file\n"
 	 "  -p = pids seperated by .\n"
