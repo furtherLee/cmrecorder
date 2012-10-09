@@ -4,7 +4,7 @@
 struct record_param{
   double record_interval;
   double total_time;
-  int* pids;
+  unsigned long* pids;
   int pid_num;
   char* output_path;
 };

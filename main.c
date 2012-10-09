@@ -2,10 +2,14 @@
 #include <stdlib.h>
 #include <ctype.h>
 #include <unistd.h>
+#include <string.h>
 #include "cmrecorder.h"
+
+#define MAX_PIDS 32
 
 static char* version = "CPU Memory Recorder 0.1";
 static char* license = "GPL2";
+static struct record_param* global_param = NULL;
 
 static void usage(){
   printf("%s\n%s\n"
@@ -22,39 +26,58 @@ static void usage(){
 }
 
 static int set_interval(const char* opt){
-  // TODO
-  return 1;
+  global_param->record_interval = atof(opt);
+  if (global_param->record_interval > 0.0)
+    return 1;
+  else
+    return 0;
 }
 
 static int set_time(const char* opt){
-  // TODO
-  return 1;
+  global_param->total_time = atof(opt);
+  if (global_param->total_time > 0.0)
+    return 1;
+  else
+    return 0;
 }
 
-static int set_output(const char* opt){
-  // TODO
+static int set_output(char* opt){
+  global_param->output_path = opt;
   return 1;
 }
 
 static int set_pids_by_command(const char* opt){
-  // TODO
+  char line[512];
+  char cmd[512];
+  sprintf(cmd, "pidof %s", opt);
+  FILE *fd = popen(cmd, "r");
+  fgets(line, 512, fd);
+  char *p;
+  for (p = strtok(line, " "); p != NULL; p = strtok(NULL, " "))
+    global_param->pids[global_param->pid_num++] = strtoul(p, NULL, 10);
+  pclose(fd);
   return 1;
 }
 
-static int set_pids(const char* opt){
-  // TODO
+static int set_pids(char* opt){
+  char* p;
+  for (p = strtok(opt, "."); p != NULL; p = strtok(NULL, "."))
+    global_param->pids[global_param->pid_num++] = strtoul(p, NULL, 10);
+  
   return 1;
 }
 
-static struct record_param* global_param = NULL;
 
 static void global_init(){
   global_param = (struct record_param*)malloc(sizeof(struct record_param));
   global_param->total_time = -1;
+  global_param->pids = (unsigned long *)malloc(MAX_PIDS*sizeof(unsigned long));
+  global_param->pid_num = 0;
   // TODO register signal
 }
 
 static void global_deinit(){
+  free(global_param->pids);
   free(global_param);
 }
 
