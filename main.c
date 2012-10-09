@@ -51,7 +51,10 @@ static int set_pids_by_command(const char* opt){
   char cmd[512];
   sprintf(cmd, "pidof %s", opt);
   FILE *fd = popen(cmd, "r");
-  fgets(line, 512, fd);
+  if(!fgets(line, 512, fd)){
+    pclose(fd);
+    return 0;
+  };
   char *p;
   for (p = strtok(line, " "); p != NULL; p = strtok(NULL, " "))
     global_param->pids[global_param->pid_num++] = strtoul(p, NULL, 10);
