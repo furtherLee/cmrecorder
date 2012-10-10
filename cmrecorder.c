@@ -51,7 +51,7 @@ static void get_current_pinfo(struct pinfo* info, unsigned long pid){
     fclose(fd);
     return;
   }
-  for (p = strtok(line, " "); counter < 14; p = strtok(NULL, " "), counter++);
+  for (p = strtok(line, " "); counter < 13; p = strtok(NULL, " "), counter++);
   info->utime = strtoul(p, NULL, 10);
   p = strtok(NULL, " ");
   info->stime = strtoul(p, NULL, 10);
@@ -113,6 +113,7 @@ static void record_one(){
 
   for (i = 0; i < env.pid_num; ++i){
     get_current_pinfo(&tempInfo, env.last_infos[i].pid);
+    //    printf("%lu %lu %lu %lu\n", tempInfo.utime, tempInfo.stime, env.last_infos[i].utime, env.last_infos[i].stime);
     mem += tempInfo.mem;
     cpu += tempInfo.utime + tempInfo.stime - env.last_infos[i].utime - env.last_infos[i].stime;
     env.last_infos[i].utime = tempInfo.utime;
@@ -120,9 +121,13 @@ static void record_one(){
     env.last_infos[i].mem = tempInfo.mem;
   }
   
+
   unsigned long current_cpu = get_current_total_time();
   double cpu_rate = cpu * 100.0 / (current_cpu - env.last_total_time);
-  
+
+
+  //  printf("%lu %lu\n", cpu, current_cpu - env.last_total_time); 
+  env.last_total_time = current_cpu;
   output_one_result(mem, cpu_rate);
 }
 
