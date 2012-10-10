@@ -1,4 +1,4 @@
-OBJS = main.o cmrecorder.o
+OBJS = main.o cmrecorder.o pidof.o
 CFLAGS = -Wall -O2
 CC = gcc
 LIBS = -lm
@@ -17,3 +17,4 @@ clean:
 	rm -f *.o
 	rm -f cmrecorder
 	rm -f *~
+

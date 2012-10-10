@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <string.h>
 #include "cmrecorder.h"
+#include "pidof.h"
 
 #define MAX_PIDS 32
 
@@ -47,18 +48,26 @@ static int set_output(char* opt){
 }
 
 static int set_pids_by_command(const char* opt){
-  char line[512];
-  char cmd[512];
-  sprintf(cmd, "pidof %s", opt);
-  FILE *fd = popen(cmd, "r");
-  if(!fgets(line, 512, fd)){
+  /*
+    char line[512];
+    char cmd[512];
+    sprintf(cmd, "pidof %s", opt);
+    FILE *fd = popen(cmd, "r");
+    if(!fgets(line, 512, fd)){
     pclose(fd);
     return 0;
-  };
-  char *p;
-  for (p = strtok(line, " "); p != NULL; p = strtok(NULL, " "))
+    };
+    char *p;
+    for (p = strtok(line, " "); p != NULL; p = strtok(NULL, " "))
     global_param->pids[global_param->pid_num++] = strtoul(p, NULL, 10);
-  pclose(fd);
+    pclose(fd);
+  */
+  unsigned long* pids = getpids(opt, &global_param->pid_num);
+  int i;
+  for (i = 0; i < global_param->pid_num; ++i)
+    global_param->pids[i] = pids[i];
+  free(pids);
+  
   return 1;
 }
 
@@ -86,7 +95,7 @@ static void global_deinit(){
 
 int main(int argc, char* argv[]){
   int exitcode = 0;
-  char c;
+  int c;
 
   char pids_filled = 0;
   char interval_filled = 0;
